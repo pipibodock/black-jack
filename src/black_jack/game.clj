@@ -37,8 +37,31 @@
         points (points-cards cards)]
     (assoc new-player :points points)))
 
-(def player (player "luiz"))
-(card/print-player (more-card player))
+(defn game [player]
+  (println (:player-name player) ": mais cartas?")
+  (if (= (read-line) "sim")
+    (let [player-with-more-cards (more-card player)]
+      (card/print-player player-with-more-cards)
+      (recur player-with-more-cards))
+    player))
 
-;(card/print-player (player "luiz"))
-;(card/print-player (player "dealer"))
+(defn dealer-decision [player-points dealer]
+  (let [dealer-points (:points dealer)]
+    (<= dealer-points player-points)))
+
+(defn dealer-game [player-points dealer]
+  (println (:player-name dealer) ": mais cartas?")
+  (if (dealer-decision player-points dealer)
+    (let [dealer-with-more-cards (more-card dealer)]
+      (card/print-player dealer-with-more-cards)
+      (recur player-points dealer-with-more-cards))
+    dealer))
+
+(def player-one (player "luiz"))
+(card/print-player player-one)
+
+(def dealer (player "dealer"))
+(card/print-player dealer)
+
+(def player-after-game (game player-one))
+(dealer-game (:points player-after-game) dealer)
