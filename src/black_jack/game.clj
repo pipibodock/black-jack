@@ -5,10 +5,29 @@
   "Genereta a card number between 1 and 13"
   (inc (rand-int 13)))
 
+(defn jqk-to-ten [value]
+  "Alter value J Q and K to 10"
+  (if (> value 10) 10 value))
+
+(defn one-to-eleven [value]
+  "Alter value A to 11"
+  (if (= value 1) 11 value))
+
+(defn points-cards [cards]
+  (let [cards-without-jqk (map jqk-to-ten cards)
+        cards-without-as (map one-to-eleven cards-without-jqk)
+        sum-with-as-one (reduce + cards-without-jqk)
+        sum-with-as-eleven (reduce + cards-without-as)]
+    (if (> sum-with-as-eleven 21) sum-with-as-one sum-with-as-eleven)))
+
 (defn player [player-name]
   (let [card1 (new-card)
-        card2 (new-card)]
+        card2 (new-card)
+        cards [card1 card2]
+        points (points-cards cards)]
     {:player-name player-name
-     :cards [card1 card2]}))
+     :cards cards
+     :points points}))
 
 (card/print-player (player "luiz"))
+(card/print-player (player "dealer"))
