@@ -29,5 +29,16 @@
      :cards cards
      :points points}))
 
-(card/print-player (player "luiz"))
-(card/print-player (player "dealer"))
+(defn more-card [player]
+  (let [card (new-card)
+        cards (conj (:cards player) card)
+        ;new-player (assoc player :cards cards) ;Alternativa ao update
+        new-player (update player :cards conj card)
+        points (points-cards cards)]
+    (assoc new-player :points points)))
+
+(def player (player "luiz"))
+(card/print-player (more-card player))
+
+;(card/print-player (player "luiz"))
+;(card/print-player (player "dealer"))
