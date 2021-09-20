@@ -47,21 +47,39 @@
 
 (defn dealer-decision [player-points dealer]
   (let [dealer-points (:points dealer)]
-    (<= dealer-points player-points)))
+    (if (> player-points 21) false (<= dealer-points player-points))))
 
 (defn dealer-game [player-points dealer]
-  (println (:player-name dealer) ": mais cartas?")
   (if (dealer-decision player-points dealer)
     (let [dealer-with-more-cards (more-card dealer)]
       (card/print-player dealer-with-more-cards)
       (recur player-points dealer-with-more-cards))
     dealer))
 
-(def player-one (player "luiz"))
+(defn end-game [player dealer]
+  (let [player-points (:points player)
+        dealer-points (:points dealer)
+        player-name (:player-name player)
+        dealer-name (:player-name dealer)
+        message (cond
+                  (and (> player-points 21) (> dealer-points 21)) "Ambos Perderam"
+                  (= player-points dealer-points) "Empatou"
+                  (> player-points 21) (str dealer-name " ganhou")
+                  (> dealer-points 21) (str player-name " ganhou")
+                  (> player-points dealer-points) (str player-name " ganhou")
+                  (> dealer-points player-points) (str dealer-name " ganhou"))]
+    (card/print-player player)
+    (card/print-player dealer)
+    (println message)))
+
+; ---------------------------------------------------
+(def player-one (player "Luiz"))
 (card/print-player player-one)
 
 (def dealer (player "dealer"))
-(card/print-player dealer)
+(card/print-masked-player dealer)
 
 (def player-after-game (game player-one))
-(dealer-game (:points player-after-game) dealer)
+(def dealer-after-game (dealer-game (:points player-after-game) dealer))
+
+(end-game player-after-game dealer-after-game)
